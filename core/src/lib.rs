@@ -12,12 +12,17 @@ pub enum DocField {
     String(String),
     DateTime(chrono::DateTime<chrono::Utc>),
     Doc(Doc),
+    BoolArray(Vec<bool>),
+    IntArray(Vec<i64>),
+    FloatArray(Vec<f64>),
+    StringArray(Vec<String>),
+    DateTimeArray(Vec<chrono::DateTime<chrono::Utc>>),
     DocArray(Vec<Doc>),
     MaybeBool(Option<bool>),
     MaybeInt(Option<i64>),
     MaybeFloat(Option<f64>),
     MaybeString(Option<String>),
-    MaybeTime(Option<chrono::DateTime<chrono::Utc>>),
+    MaybeDateTime(Option<chrono::DateTime<chrono::Utc>>),
 }
 
 #[derive(Clone, Debug)]
