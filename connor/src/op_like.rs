@@ -27,9 +27,9 @@ fn like(condition: &str, data: &str) -> bool {
     }
 }
 
-pub fn handle(condition: &core::DocField, doc_field: &core::DocField) -> bool {
+pub fn handle(condition: &core::doc::Field, doc_field: &core::doc::Field) -> bool {
     match (condition, doc_field) {
-        (core::DocField::String(str_cond), core::DocField::String(str_val)) => {
+        (core::doc::Field::String(str_cond), core::doc::Field::String(str_val)) => {
             like(str_cond, str_val)
         }
         _ => false,
