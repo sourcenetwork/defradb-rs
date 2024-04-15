@@ -2,6 +2,13 @@ use core::DocField;
 use std::error;
 use std::fmt;
 
+mod op_eq;
+mod op_ge;
+mod op_gt;
+mod op_ilike;
+mod op_in;
+mod op_like;
+
 #[derive(Clone, Debug)]
 pub enum Condition {
     Prop(usize, Box<Condition>),
@@ -99,17 +106,17 @@ pub fn match_conditions(condition: &Condition, doc_field: &DocField) -> Result<b
     match &condition {
         &Condition::Op(ref op, ref target_doc_field) => {
             match op {
-                Op::EQ => return Result::Ok(handle_eq(target_doc_field, doc_field)),
-                Op::GT => return Result::Ok(handle_gt(target_doc_field, doc_field)),
-                Op::LT => return Result::Ok(!handle_ge(target_doc_field, doc_field)),
-                Op::GE => return Result::Ok(handle_ge(target_doc_field, doc_field)),
-                Op::LE => return Result::Ok(!handle_gt(target_doc_field, doc_field)),
-                Op::IN => return Result::Ok(handle_in(target_doc_field, doc_field)),
-                Op::NIN => return Result::Ok(!handle_in(target_doc_field, doc_field)),
-                Op::LIKE => return Result::Ok(handle_like(target_doc_field, doc_field)),
-                Op::NLIKE => return Result::Ok(!handle_like(target_doc_field, doc_field)),
-                Op::ILIKE => return Result::Ok(handle_ilike(target_doc_field, doc_field)),
-                Op::NILIKE => return Result::Ok(!handle_ilike(target_doc_field, doc_field)),
+                Op::EQ => return Result::Ok(op_eq::handle(target_doc_field, doc_field)),
+                Op::GT => return Result::Ok(op_gt::handle(target_doc_field, doc_field)),
+                Op::LT => return Result::Ok(!op_ge::handle(target_doc_field, doc_field)),
+                Op::GE => return Result::Ok(op_ge::handle(target_doc_field, doc_field)),
+                Op::LE => return Result::Ok(!op_gt::handle(target_doc_field, doc_field)),
+                Op::IN => return Result::Ok(op_in::handle(target_doc_field, doc_field)),
+                Op::NIN => return Result::Ok(!op_in::handle(target_doc_field, doc_field)),
+                Op::LIKE => return Result::Ok(op_like::handle(target_doc_field, doc_field)),
+                Op::NLIKE => return Result::Ok(!op_like::handle(target_doc_field, doc_field)),
+                Op::ILIKE => return Result::Ok(op_ilike::handle(target_doc_field, doc_field)),
+                Op::NILIKE => return Result::Ok(!op_ilike::handle(target_doc_field, doc_field)),
                 _ => false,
             };
         }
@@ -149,216 +156,6 @@ pub fn match_conditions(condition: &Condition, doc_field: &DocField) -> Result<b
         },
     }
     return Result::Ok(false);
-}
-
-fn handle_eq(target_doc_field: &core::DocField, doc_field: &core::DocField) -> bool {
-    match target_doc_field {
-        core::DocField::String(str_cond) => {
-            if let core::DocField::String(str_val) = doc_field {
-                return str_val == str_cond;
-            }
-            false
-        }
-        core::DocField::Int(int_cond) => {
-            if let core::DocField::Int(int_val) = doc_field {
-                return int_val == int_cond;
-            }
-            if let core::DocField::Float(float_val) = doc_field {
-                return *float_val == *int_cond as f64;
-            }
-            false
-        }
-        core::DocField::Float(float_cond) => {
-            if let core::DocField::Float(float_val) = doc_field {
-                return float_val == float_cond;
-            }
-            if let core::DocField::Int(int_val) = doc_field {
-                return *int_val as f64 == *float_cond;
-            }
-            false
-        }
-        core::DocField::Bool(bool_cond) => {
-            if let core::DocField::Bool(bool_val) = doc_field {
-                return bool_val == bool_cond;
-            }
-            false
-        }
-        core::DocField::DateTime(date_time_cond) => {
-            if let core::DocField::DateTime(date_time_val) = doc_field {
-                return date_time_val == date_time_cond;
-            }
-            false
-        }
-        _ => return false,
-    }
-}
-
-fn handle_gt(condition: &core::DocField, doc_field: &core::DocField) -> bool {
-    match condition {
-        core::DocField::Int(int_cond) => {
-            if let core::DocField::Int(int_val) = doc_field {
-                return int_val > int_cond;
-            }
-            if let core::DocField::Float(float_val) = doc_field {
-                return *float_val > *int_cond as f64;
-            }
-            false
-        }
-        core::DocField::Float(float_cond) => {
-            if let core::DocField::Float(float_val) = doc_field {
-                return float_val > float_cond;
-            }
-            if let core::DocField::Int(int_val) = doc_field {
-                return *int_val as f64 > *float_cond;
-            }
-            false
-        }
-        core::DocField::DateTime(date_time_cond) => {
-            if let core::DocField::DateTime(date_time_val) = doc_field {
-                return date_time_val > date_time_cond;
-            }
-            false
-        }
-        _ => return false,
-    }
-}
-
-fn handle_ge(condition: &core::DocField, doc_field: &core::DocField) -> bool {
-    match condition {
-        core::DocField::Int(int_cond) => {
-            if let core::DocField::Int(int_val) = doc_field {
-                return int_val >= int_cond;
-            }
-            if let core::DocField::Float(float_val) = doc_field {
-                return *float_val >= *int_cond as f64;
-            }
-            false
-        }
-        core::DocField::Float(float_cond) => {
-            if let core::DocField::Float(float_val) = doc_field {
-                return float_val >= float_cond;
-            }
-            if let core::DocField::Int(int_val) = doc_field {
-                return *int_val as f64 >= *float_cond;
-            }
-            false
-        }
-        core::DocField::DateTime(date_time_cond) => {
-            if let core::DocField::DateTime(date_time_val) = doc_field {
-                return date_time_val >= date_time_cond;
-            }
-            false
-        }
-        _ => return false,
-    }
-}
-
-fn handle_in(condition: &core::DocField, doc_field: &core::DocField) -> bool {
-    match condition {
-        core::DocField::IntArray(int_arr_cond) => {
-            if let core::DocField::Int(int_val) = doc_field {
-                return int_arr_cond.contains(&int_val);
-            }
-            false
-        }
-        core::DocField::FloatArray(float_arr_cond) => {
-            if let core::DocField::Float(float_val) = doc_field {
-                return float_arr_cond.contains(&float_val);
-            }
-            false
-        }
-        core::DocField::StringArray(str_arr_cond) => {
-            if let core::DocField::String(str_val) = doc_field {
-                return str_arr_cond.contains(&str_val);
-            }
-            false
-        }
-        core::DocField::DateTimeArray(date_time_arr_cond) => {
-            if let core::DocField::DateTime(date_time_val) = doc_field {
-                return date_time_arr_cond.contains(&date_time_val);
-            }
-            false
-        }
-        _ => return false,
-    }
-}
-
-fn like(condition: &str, data: &str) -> bool {
-    let mut has_prefix = false;
-    let mut has_suffix = false;
-    let mut cn = condition.to_string();
-
-    if cn.starts_with('%') {
-        has_prefix = true;
-        cn.remove(0);
-    }
-    if cn.ends_with('%') {
-        has_suffix = true;
-        cn.pop();
-    }
-
-    match (has_prefix, has_suffix) {
-        (true, true) => data.contains(&cn),
-        (true, false) => data.ends_with(&cn),
-        (false, true) => data.starts_with(&cn),
-        (false, false) => {
-            let start_and_end: Vec<&str> = cn.split('%').collect();
-            if start_and_end.len() == 2 {
-                data.starts_with(start_and_end[0]) && data.ends_with(start_and_end[1])
-            } else {
-                data == cn
-            }
-        }
-    }
-}
-
-fn handle_like(condition: &core::DocField, doc_field: &core::DocField) -> bool {
-    match (condition, doc_field) {
-        (core::DocField::String(str_cond), core::DocField::String(str_val)) => {
-            like(str_cond, str_val)
-        }
-        _ => false,
-    }
-}
-
-fn ilike(condition: &str, data: &str) -> bool {
-    let mut has_prefix = false;
-    let mut has_suffix = false;
-    let mut cn = condition.to_lowercase();
-
-    if cn.starts_with('%') {
-        has_prefix = true;
-        cn.remove(0);
-    }
-    if cn.ends_with('%') {
-        has_suffix = true;
-        cn.pop();
-    }
-
-    let data = data.to_lowercase();
-
-    match (has_prefix, has_suffix) {
-        (true, true) => data.contains(&cn),
-        (true, false) => data.ends_with(&cn),
-        (false, true) => data.starts_with(&cn),
-        (false, false) => {
-            let start_and_end: Vec<&str> = cn.split('%').collect();
-            if start_and_end.len() == 2 {
-                data.starts_with(start_and_end[0]) && data.ends_with(start_and_end[1])
-            } else {
-                data == cn
-            }
-        }
-    }
-}
-
-fn handle_ilike(condition: &core::DocField, doc_field: &core::DocField) -> bool {
-    match (condition, doc_field) {
-        (core::DocField::String(str_cond), core::DocField::String(str_val)) => {
-            ilike(str_cond, str_val)
-        }
-        _ => false,
-    }
 }
 
 #[cfg(test)]
@@ -484,12 +281,27 @@ mod tests {
         test_op(DocField::Float(5.0), Op::EQ, DocField::Float(5.0), true);
         test_op(DocField::Float(5.5), Op::EQ, DocField::Float(5.0), false);
     }
-    
+
     #[test]
     fn test_eq_opt_float() {
-        test_op(DocField::MaybeFloat(Some(5.0)), Op::EQ, DocField::Float(5.0), true);
-        test_op(DocField::MaybeFloat(None), Op::EQ, DocField::Float(5.0), false);
-        test_op(DocField::MaybeFloat(Some(5.0)), Op::EQ, DocField::Float(4.0), false);
+        test_op(
+            DocField::MaybeFloat(Some(5.0)),
+            Op::EQ,
+            DocField::Float(5.0),
+            true,
+        );
+        test_op(
+            DocField::MaybeFloat(None),
+            Op::EQ,
+            DocField::Float(5.0),
+            false,
+        );
+        test_op(
+            DocField::MaybeFloat(Some(5.0)),
+            Op::EQ,
+            DocField::Float(4.0),
+            false,
+        );
     }
 
     #[test]
@@ -503,12 +315,27 @@ mod tests {
         test_op(DocField::Bool(true), Op::EQ, DocField::Bool(true), true);
         test_op(DocField::Bool(false), Op::EQ, DocField::Bool(true), false);
     }
-    
+
     #[test]
     fn test_eq_opt_bool() {
-        test_op(DocField::MaybeBool(Some(true)), Op::EQ, DocField::Bool(true), true);
-        test_op(DocField::MaybeBool(None), Op::EQ, DocField::Bool(true), false);
-        test_op(DocField::MaybeBool(Some(true)), Op::EQ, DocField::Bool(false), false);
+        test_op(
+            DocField::MaybeBool(Some(true)),
+            Op::EQ,
+            DocField::Bool(true),
+            true,
+        );
+        test_op(
+            DocField::MaybeBool(None),
+            Op::EQ,
+            DocField::Bool(true),
+            false,
+        );
+        test_op(
+            DocField::MaybeBool(Some(true)),
+            Op::EQ,
+            DocField::Bool(false),
+            false,
+        );
     }
 
     #[test]
@@ -516,12 +343,22 @@ mod tests {
         test_op(now(), Op::EQ, now(), true);
         test_op(yesterday(), Op::EQ, now(), false);
     }
-    
+
     #[test]
     fn test_eq_opt_time() {
-        test_op(DocField::MaybeDateTime(Some(now_time())), Op::EQ, now(), true);
+        test_op(
+            DocField::MaybeDateTime(Some(now_time())),
+            Op::EQ,
+            now(),
+            true,
+        );
         test_op(DocField::MaybeDateTime(None), Op::EQ, now(), false);
-        test_op(DocField::MaybeDateTime(Some(now_time())), Op::EQ, yesterday(), false);
+        test_op(
+            DocField::MaybeDateTime(Some(now_time())),
+            Op::EQ,
+            yesterday(),
+            false,
+        );
     }
 
     #[test]
