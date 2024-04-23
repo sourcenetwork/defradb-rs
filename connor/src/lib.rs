@@ -108,8 +108,7 @@ pub fn match_conditions(condition: &Condition, doc_field: &Field) -> Result<bool
     match &condition {
         &Condition::Op(ref op, ref target_doc_field) => {
             match op {
-                Op::EQ | Op::NE => {}
-                _ => {
+                Op::GT | Op::GE | Op::LT | Op::LE => {
                     match doc_field {
                         core::doc::Field::Null => return Result::Ok(false),
                         _ => {}
@@ -119,6 +118,7 @@ pub fn match_conditions(condition: &Condition, doc_field: &Field) -> Result<bool
                         _ => {}
                     }
                 }
+                _ => {}
             }
             match op {
                 Op::EQ => return Result::Ok(op_eq::handle(target_doc_field, doc_field)),

@@ -31,6 +31,8 @@ fn ilike(condition: &str, data: &str) -> bool {
 
 pub fn handle(condition: &core::doc::Field, doc_field: &core::doc::Field) -> bool {
     match (condition, doc_field) {
+        (core::doc::Field::Null, core::doc::Field::Null) => true,
+        (core::doc::Field::Null, _) | (_, core::doc::Field::Null) => false,
         (core::doc::Field::String(str_cond), core::doc::Field::String(str_val)) => {
             ilike(str_cond, str_val)
         }

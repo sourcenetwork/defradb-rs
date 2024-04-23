@@ -439,6 +439,17 @@ fn test_like() {
 }
 
 #[test]
+fn test_like_null() {
+    let str_field = Field::String("Source is the glue of web3".to_string());
+
+    let cond = Condition::Op(Op::LIKE, Field::Null);
+    expect(match_conditions(&cond, &str_field), false, false);
+
+    let cond = Condition::Op(Op::LIKE, str_field);
+    expect(match_conditions(&cond, &Field::Null), false, false);
+}
+
+#[test]
 fn test_nlike() {
     let field = Field::String("Source is the glue of web3".to_string());
 
@@ -476,6 +487,17 @@ fn test_nlike() {
 }
 
 #[test]
+fn test_nlike_null() {
+    let str_field = Field::String("Source is the glue of web3".to_string());
+
+    let cond = Condition::Op(Op::NLIKE, Field::Null);
+    expect(match_conditions(&cond, &str_field), true, false);
+
+    let cond = Condition::Op(Op::NLIKE, str_field);
+    expect(match_conditions(&cond, &Field::Null), true, false);
+}
+
+#[test]
 fn test_ilike() {
     let field = Field::String("Source is the glue of web3".to_string());
 
@@ -502,6 +524,17 @@ fn test_ilike() {
     // match start and end with
     let cond = Condition::Op(Op::ILIKE, Field::String("source%WEB3".to_string()));
     expect(match_conditions(&cond, &field), true, false);
+}
+
+#[test]
+fn test_ilike_null() {
+    let str_field = Field::String("Source is the glue of web3".to_string());
+
+    let cond = Condition::Op(Op::ILIKE, Field::Null);
+    expect(match_conditions(&cond, &str_field), false, false);
+
+    let cond = Condition::Op(Op::ILIKE, str_field);
+    expect(match_conditions(&cond, &Field::Null), false, false);
 }
 
 #[test]
@@ -535,6 +568,17 @@ fn test_nilike() {
     // match start and end with
     let cond = Condition::Op(Op::NILIKE, Field::String("source%WEB3".to_string()));
     expect(match_conditions(&cond, &field), false, false);
+}
+
+#[test]
+fn test_nilike_null() {
+    let str_field = Field::String("Source is the glue of web3".to_string());
+
+    let cond = Condition::Op(Op::NILIKE, Field::Null);
+    expect(match_conditions(&cond, &str_field), true, false);
+
+    let cond = Condition::Op(Op::NILIKE, str_field);
+    expect(match_conditions(&cond, &Field::Null), true, false);
 }
 
 #[test]
