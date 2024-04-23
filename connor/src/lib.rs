@@ -1,7 +1,6 @@
 use core::doc::Field;
-use std::error;
-use std::fmt;
 
+mod err;
 mod op_eq;
 mod op_ge;
 mod op_gt;
@@ -41,26 +40,7 @@ pub enum CompoundOp {
     OR,
 }
 
-#[derive(Clone, Debug)]
-pub struct Error {
-    pub message: String,
-}
-
-impl Error {
-    pub fn new(message: String) -> Self {
-        Self { message: message }
-    }
-}
-
-impl fmt::Display for Error {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(f, "Error: {}", self.message)
-    }
-}
-
-impl error::Error for Error {}
-
-pub fn match_conditions(condition: &Condition, doc_field: &Field) -> Result<bool, Error> {
+pub fn match_conditions(condition: &Condition, doc_field: &Field) -> Result<bool, err::Error> {
     match doc_field {
         Field::DocArray(arr) => {
             for doc in arr {
@@ -139,7 +119,7 @@ pub fn match_conditions(condition: &Condition, doc_field: &Field) -> Result<bool
             if let Field::Doc(doc) = doc_field {
                 match doc.fields.get(*index) {
                     Some(prop_data) => return match_conditions(op.as_ref(), prop_data),
-                    None => return Result::Err(Error::new("Index out of bounds".to_string())),
+                    None => return Result::Err(err::Error::new("Index out of bounds".to_string())),
                 }
             }
             return Result::Ok(false);
