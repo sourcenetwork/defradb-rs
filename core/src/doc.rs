@@ -5,6 +5,7 @@ pub const DOC_ID_FIELD_INDEX: usize = 0;
 
 #[derive(Clone, Debug)]
 pub enum Field {
+    Null,
     Bool(bool),
     Int(i64),
     Float(f64),

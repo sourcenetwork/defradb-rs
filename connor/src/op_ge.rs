@@ -1,5 +1,6 @@
 pub fn handle(condition: &core::doc::Field, doc_field: &core::doc::Field) -> bool {
     match condition {
+        core::doc::Field::Null => false,
         core::doc::Field::Int(int_cond) => {
             if let core::doc::Field::Int(int_val) = doc_field {
                 return int_val >= int_cond;

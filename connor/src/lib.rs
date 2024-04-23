@@ -18,7 +18,7 @@ pub enum Condition {
     CompoundOp(CompoundOp, Vec<Condition>),
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub enum Op {
     EQ,
     NE,
@@ -34,7 +34,7 @@ pub enum Op {
     NILIKE,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub enum CompoundOp {
     NOT,
     AND,
@@ -108,7 +108,21 @@ pub fn match_conditions(condition: &Condition, doc_field: &Field) -> Result<bool
     match &condition {
         &Condition::Op(ref op, ref target_doc_field) => {
             match op {
+                Op::EQ | Op::NE => {}
+                _ => {
+                    match doc_field {
+                        core::doc::Field::Null => return Result::Ok(false),
+                        _ => {}
+                    }
+                    match target_doc_field {
+                        core::doc::Field::Null => return Result::Ok(false),
+                        _ => {}
+                    }
+                }
+            }
+            match op {
                 Op::EQ => return Result::Ok(op_eq::handle(target_doc_field, doc_field)),
+                Op::NE => return Result::Ok(!op_eq::handle(target_doc_field, doc_field)),
                 Op::GT => return Result::Ok(op_gt::handle(target_doc_field, doc_field)),
                 Op::LT => return Result::Ok(!op_ge::handle(target_doc_field, doc_field)),
                 Op::GE => return Result::Ok(op_ge::handle(target_doc_field, doc_field)),
@@ -119,7 +133,6 @@ pub fn match_conditions(condition: &Condition, doc_field: &Field) -> Result<bool
                 Op::NLIKE => return Result::Ok(!op_like::handle(target_doc_field, doc_field)),
                 Op::ILIKE => return Result::Ok(op_ilike::handle(target_doc_field, doc_field)),
                 Op::NILIKE => return Result::Ok(!op_ilike::handle(target_doc_field, doc_field)),
-                _ => false,
             };
         }
         &Condition::Prop(index, op) => {

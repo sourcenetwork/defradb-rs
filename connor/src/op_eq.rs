@@ -1,5 +1,6 @@
 pub fn handle(target_doc_field: &core::doc::Field, doc_field: &core::doc::Field) -> bool {
     match target_doc_field {
+        core::doc::Field::Null => matches!(doc_field, core::doc::Field::Null),
         core::doc::Field::String(str_cond) => {
             if let core::doc::Field::String(str_val) = doc_field {
                 return str_val == str_cond;

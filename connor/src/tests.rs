@@ -190,6 +190,26 @@ fn test_eq_opt_time() {
 }
 
 #[test]
+fn test_eq_null() {
+    test_op(Field::Int(5), Op::EQ, Field::Null, false);
+    test_op(Field::Null, Op::EQ, Field::Int(5), false);
+    test_op(Field::Null, Op::EQ, Field::Null, true);
+}
+
+#[test]
+fn test_ne() {
+    test_op(Field::Int(5), Op::NE, Field::Int(5), false);
+    test_op(Field::Int(4), Op::NE, Field::Int(5), true);
+}
+
+#[test]
+fn test_ne_null() {
+    test_op(Field::Null, Op::NE, Field::Int(5), true);
+    test_op(Field::Int(5), Op::NE, Field::Null, true);
+    test_op(Field::Null, Op::NE, Field::Null, false);
+}
+
+#[test]
 fn test_gt_int() {
     test_op(Field::Int(5), Op::GT, Field::Int(4), true);
     test_op(Field::Int(5), Op::GT, Field::Int(5), false);
@@ -216,6 +236,12 @@ fn test_gt_time() {
     test_op(now(), Op::GT, yesterday(), true);
     test_op(now(), Op::GT, now(), false);
     test_op(yesterday(), Op::GT, now(), false);
+}
+
+#[test]
+fn test_gt_null() {
+    test_op(Field::Null, Op::GT, Field::Int(5), false);
+    test_op(Field::Int(5), Op::GT, Field::Null, false);
 }
 
 #[test]
@@ -248,6 +274,12 @@ fn test_ge_time() {
 }
 
 #[test]
+fn test_ge_null() {
+    test_op(Field::Null, Op::GE, Field::Int(5), false);
+    test_op(Field::Int(5), Op::GE, Field::Null, false);
+}
+
+#[test]
 fn test_lt_int() {
     test_op(Field::Int(4), Op::LT, Field::Int(5), true);
     test_op(Field::Int(5), Op::LT, Field::Int(5), false);
@@ -273,6 +305,12 @@ fn test_lt_time() {
     test_op(yesterday(), Op::LT, now(), true);
     test_op(now(), Op::LT, now(), false);
     test_op(now(), Op::LT, yesterday(), false);
+}
+
+#[test]
+fn test_lt_null() {
+    test_op(Field::Null, Op::LT, Field::Int(5), false);
+    test_op(Field::Int(5), Op::LT, Field::Null, false);
 }
 
 #[test]
@@ -302,6 +340,12 @@ fn test_le_time() {
     test_op(yesterday(), Op::LE, now(), true);
     test_op(now(), Op::LE, now(), true);
     test_op(now(), Op::LE, yesterday(), false);
+}
+
+#[test]
+fn test_le_null() {
+    test_op(Field::Null, Op::LE, Field::Int(5), false);
+    test_op(Field::Int(5), Op::LE, Field::Null, false);
 }
 
 #[test]
