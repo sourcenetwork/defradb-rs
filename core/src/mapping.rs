@@ -59,7 +59,12 @@ impl DocumentMapping {
         doc
     }
     // Set the first field of this name with the given value. Returns an error if the field does not exist.
-    pub fn set_first_of_name(&mut self, doc: &mut Doc, name: &str, value: Field) -> Result<(), String> {
+    pub fn set_first_of_name(
+        &mut self,
+        doc: &mut Doc,
+        name: &str,
+        value: Field,
+    ) -> Result<(), String> {
         if let Some(indexes) = self.indexes_by_name.get(name) {
             if let Some(&index) = indexes.first() {
                 if index < doc.fields.len() {
