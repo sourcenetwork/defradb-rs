@@ -71,3 +71,26 @@ fn deserialize_doc_with_null_fields() {
         panic!("Expected Null variant");
     }
 }
+
+#[test]
+fn deserialize_doc_with_null_array_elements() {
+    let json_str =
+        r#"{"fields":[{"OptionalIntArray":[1,2,null]},{"OptionalFloatArray":[null,2.0,null]}]}"#;
+    let result = deserialize_doc(json_str);
+
+    assert!(result.is_ok());
+    let doc = result.unwrap();
+    assert_eq!(doc.fields.len(), 2);
+
+    if let core::doc::Field::OptionalIntArray(value) = &doc.fields[0] {
+        assert_eq!(*value, vec![Some(1), Some(2), None]);
+    } else {
+        panic!("Expected Int variant");
+    }
+
+    if let core::doc::Field::OptionalFloatArray(value) = &doc.fields[1] {
+        assert_eq!(*value, vec![None, Some(2.0), None]);
+    } else {
+        panic!("Expected Float variant");
+    }
+}

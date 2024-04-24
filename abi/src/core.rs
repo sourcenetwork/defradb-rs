@@ -52,6 +52,7 @@ impl TryFrom<Value> for FieldWrapper {
                 } else if let Some(v) = map.remove("BoolArray") {
                     if let Value::Array(arr) = v {
                         let mut res_vec = Vec::new();
+                        res_vec.reserve(arr.len());
                         for bool_val in arr {
                             if let Value::Bool(b) = bool_val {
                                 res_vec.push(b);
@@ -64,6 +65,7 @@ impl TryFrom<Value> for FieldWrapper {
                 } else if let Some(v) = map.remove("IntArray") {
                     if let Value::Array(arr) = v {
                         let mut res_vec = Vec::new();
+                        res_vec.reserve(arr.len());
                         for int_val in arr {
                             if let Value::Number(num) = int_val {
                                 if let Some(int_val) = num.as_i64() {
@@ -80,6 +82,7 @@ impl TryFrom<Value> for FieldWrapper {
                 } else if let Some(v) = map.remove("FloatArray") {
                     if let Value::Array(arr) = v {
                         let mut res_vec = Vec::new();
+                        res_vec.reserve(arr.len());
                         for float_val in arr {
                             if let Value::Number(num) = float_val {
                                 if let Some(float_val) = num.as_f64() {
@@ -96,6 +99,7 @@ impl TryFrom<Value> for FieldWrapper {
                 } else if let Some(v) = map.remove("StringArray") {
                     if let Value::Array(arr) = v {
                         let mut res_vec = Vec::new();
+                        res_vec.reserve(arr.len());
                         for str_val in arr {
                             if let Value::String(str) = str_val {
                                 res_vec.push(str);
@@ -108,11 +112,14 @@ impl TryFrom<Value> for FieldWrapper {
                 } else if let Some(v) = map.remove("DateTimeArray") {
                     if let Value::Array(arr) = v {
                         let mut res_vec = Vec::new();
+                        res_vec.reserve(arr.len());
                         for str_val in arr {
                             if let Value::String(str) = str_val {
                                 let date_time = chrono::DateTime::parse_from_rfc3339(&str)
                                     .map_err(|e| e.to_string())?;
                                 res_vec.push(date_time.into());
+                            } else {
+                                return Err("Expected a string in DateTimeArray".to_string());
                             }
                         }
                         return Ok(FieldWrapper(core::doc::Field::DateTimeArray(res_vec)));
@@ -120,6 +127,7 @@ impl TryFrom<Value> for FieldWrapper {
                 } else if let Some(v) = map.remove("DocArray") {
                     if let Value::Array(arr) = v {
                         let mut res_vec = Vec::new();
+                        res_vec.reserve(arr.len());
                         for doc_val in arr {
                             if let Value::Object(_) = doc_val {
                                 if let Value::Object(_) = doc_val {
@@ -186,6 +194,116 @@ impl TryFrom<Value> for FieldWrapper {
                         ))));
                     } else {
                         return Err("Expected a string or null in OptionalDateTime".to_string());
+                    }
+                } else if let Some(v) = map.remove("OptionalBoolArray") {
+                    if let Value::Array(arr) = v {
+                        let mut res_vec = Vec::new();
+                        res_vec.reserve(arr.len());
+                        for opt_bool_val in arr {
+                            match opt_bool_val {
+                                Value::Null => res_vec.push(None),
+                                Value::Bool(b) => {
+                                    res_vec.push(Some(b));
+                                }
+                                _ => {
+                                    return Err("Expected an integer or null in OptionalIntArray"
+                                        .to_string())
+                                }
+                            }
+                        }
+                        return Ok(FieldWrapper(core::doc::Field::OptionalBoolArray(res_vec)));
+                    }
+                } else if let Some(v) = map.remove("OptionalIntArray") {
+                    if let Value::Array(arr) = v {
+                        let mut res_vec = Vec::new();
+                        res_vec.reserve(arr.len());
+                        for el in arr {
+                            match el {
+                                Value::Null => res_vec.push(None),
+                                Value::Number(num) => {
+                                    if let Some(v) = num.as_i64() {
+                                        res_vec.push(Some(v));
+                                    } else {
+                                        return Err(
+                                            "Expected an integer or null in OptionalIntArray"
+                                                .to_string(),
+                                        );
+                                    }
+                                }
+                                _ => {
+                                    return Err("Expected an integer or null in OptionalIntArray"
+                                        .to_string())
+                                }
+                            }
+                        }
+                        return Ok(FieldWrapper(core::doc::Field::OptionalIntArray(res_vec)));
+                    }
+                } else if let Some(v) = map.remove("OptionalFloatArray") {
+                    if let Value::Array(arr) = v {
+                        let mut res_vec = Vec::new();
+                        res_vec.reserve(arr.len());
+                        for el in arr {
+                            match el {
+                                Value::Null => res_vec.push(None),
+                                Value::Number(num) => {
+                                    if let Some(v) = num.as_f64() {
+                                        res_vec.push(Some(v));
+                                    } else {
+                                        return Err(
+                                            "Expected a float or null in OptionalFloatArray"
+                                                .to_string(),
+                                        );
+                                    }
+                                }
+                                _ => {
+                                    return Err("Expected a float or null in OptionalFloatArray"
+                                        .to_string())
+                                }
+                            }
+                        }
+                        return Ok(FieldWrapper(core::doc::Field::OptionalFloatArray(res_vec)));
+                    }
+                } else if let Some(v) = map.remove("OptionalStringArray") {
+                    if let Value::Array(arr) = v {
+                        let mut res_vec = Vec::new();
+                        res_vec.reserve(arr.len());
+                        for el in arr {
+                            match el {
+                                Value::Null => res_vec.push(None),
+                                Value::String(str) => {
+                                    res_vec.push(Some(str));
+                                }
+                                _ => {
+                                    return Err("Expected a string or null in OptionalStringArray"
+                                        .to_string())
+                                }
+                            }
+                        }
+                        return Ok(FieldWrapper(core::doc::Field::OptionalStringArray(res_vec)));
+                    }
+                } else if let Some(v) = map.remove("OptionalDateTimeArray") {
+                    if let Value::Array(arr) = v {
+                        let mut res_vec = Vec::new();
+                        res_vec.reserve(arr.len());
+                        for el in arr {
+                            match el {
+                                Value::Null => res_vec.push(None),
+                                Value::String(str) => {
+                                    let date_time = chrono::DateTime::parse_from_rfc3339(&str)
+                                        .map_err(|e| e.to_string())?;
+                                    res_vec.push(Some(date_time.into()));
+                                }
+                                _ => {
+                                    return Err(
+                                        "Expected a string or null in OptionalDateTimeArray"
+                                            .to_string(),
+                                    )
+                                }
+                            }
+                        }
+                        return Ok(FieldWrapper(core::doc::Field::OptionalDateTimeArray(
+                            res_vec,
+                        )));
                     }
                 }
                 Err("Invalid DocField JSON structure".to_string())
