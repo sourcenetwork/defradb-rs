@@ -58,22 +58,19 @@ impl DocumentMapping {
         doc.fields = vec![Field::Int(0); self.next_index];
         doc
     }
-
-    // Set the first field of this name with the given value. Panics if the field does not exist.
-    pub fn set_first_of_name(&mut self, doc: &mut Doc, name: &str, value: Field) {
+    // Set the first field of this name with the given value. Returns an error if the field does not exist.
+    pub fn set_first_of_name(&mut self, doc: &mut Doc, name: &str, value: Field) -> Result<(), String> {
         if let Some(indexes) = self.indexes_by_name.get(name) {
             if let Some(&index) = indexes.first() {
                 if index < doc.fields.len() {
                     doc.fields[index] = value;
+                    return Ok(());
                 } else {
-                    panic!("Field index out of bounds");
+                    return Err("Field index out of bounds".to_string());
                 }
-            } else {
-                panic!("Field name not found");
             }
-        } else {
-            panic!("Field name not found");
         }
+        Err("Field name not found".to_string())
     }
 
     // Tries to set the first field of this name with the given value.
