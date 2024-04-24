@@ -47,7 +47,7 @@ fn get_doc() -> core::doc::Doc {
     }
 }
 
-fn expect(actual: Result<bool, err::Error>, expect_match: bool, expect_error: bool) {
+fn expect(actual: Result<bool, error::Error>, expect_match: bool, expect_error: bool) {
     match actual {
         Ok(true) => assert!(expect_match, "Expected match"),
         Ok(false) => assert!(!expect_match, "Expected no match"),

@@ -1,5 +1,5 @@
 pub mod cond;
-pub mod err;
+pub mod error;
 
 mod op_eq;
 mod op_ge;

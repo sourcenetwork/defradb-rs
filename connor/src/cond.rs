@@ -1,6 +1,6 @@
 use core::doc::Field;
 
-use crate::err;
+use crate::error;
 
 use crate::op_eq;
 use crate::op_ge;
@@ -39,7 +39,7 @@ pub enum CompoundOp {
     OR,
 }
 
-pub fn match_conditions(condition: &Condition, doc_field: &Field) -> Result<bool, err::Error> {
+pub fn match_conditions(condition: &Condition, doc_field: &Field) -> Result<bool, error::Error> {
     match doc_field {
         Field::DocArray(arr) => {
             for doc in arr {
@@ -118,7 +118,7 @@ pub fn match_conditions(condition: &Condition, doc_field: &Field) -> Result<bool
             if let Field::Doc(doc) = doc_field {
                 match doc.fields.get(*index) {
                     Some(prop_data) => return match_conditions(op.as_ref(), prop_data),
-                    None => return Result::Err(err::Error::new("Index out of bounds".to_string())),
+                    None => return Result::Err(error::Error::new("Index out of bounds".to_string())),
                 }
             }
             return Result::Ok(false);
