@@ -23,6 +23,11 @@ pub enum Field {
     OptionalFloat(Option<f64>),
     OptionalString(Option<String>),
     OptionalDateTime(Option<chrono::DateTime<chrono::Utc>>),
+    OptionalBoolArray(Vec<Option<bool>>),
+    OptionalIntArray(Vec<Option<i64>>),
+    OptionalFloatArray(Vec<Option<f64>>),
+    OptionalStringArray(Vec<Option<String>>),
+    OptionalDateTimeArray(Vec<Option<chrono::DateTime<chrono::Utc>>>),
 }
 
 #[derive(Clone, Debug, PartialEq)]

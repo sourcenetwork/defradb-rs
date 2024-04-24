@@ -284,6 +284,106 @@ fn test_eq_time_arr() {
 }
 
 #[test]
+fn test_eq_optional_bool_arr() {
+    test_op(
+        Field::OptionalBoolArray(vec![Some(true), None, Some(false)]),
+        Op::EQ,
+        Field::OptionalBoolArray(vec![Some(true), None, Some(false)]),
+        true,
+    );
+    test_op(
+        Field::OptionalBoolArray(vec![Some(true), Some(false), None]),
+        Op::EQ,
+        Field::OptionalBoolArray(vec![Some(true), Some(false), Some(false)]),
+        false,
+    );
+}
+
+#[test]
+fn test_eq_optional_int_arr() {
+    test_op(
+        Field::OptionalIntArray(vec![Some(2), None, Some(4)]),
+        Op::EQ,
+        Field::OptionalIntArray(vec![Some(2), None, Some(4)]),
+        true,
+    );
+    test_op(
+        Field::OptionalIntArray(vec![Some(2), Some(4), Some(3)]),
+        Op::EQ,
+        Field::OptionalIntArray(vec![Some(2), Some(3), Some(4)]),
+        false,
+    );
+    test_op(
+        Field::OptionalIntArray(vec![Some(2), Some(3)]),
+        Op::EQ,
+        Field::OptionalIntArray(vec![Some(2), Some(3), Some(4)]),
+        false,
+    );
+    test_op(
+        Field::OptionalIntArray(vec![Some(2), Some(3), None]),
+        Op::EQ,
+        Field::OptionalIntArray(vec![Some(2), Some(3), Some(0)]),
+        false,
+    );
+}
+
+#[test]
+fn test_eq_optional_float_arr() {
+    test_op(
+        Field::OptionalFloatArray(vec![Some(2.0), None, Some(3.0)]),
+        Op::EQ,
+        Field::OptionalFloatArray(vec![Some(2.0), None, Some(3.0)]),
+        true,
+    );
+    test_op(
+        Field::OptionalFloatArray(vec![Some(2.0), Some(3.0), None]),
+        Op::EQ,
+        Field::OptionalFloatArray(vec![Some(2.0), Some(3.0), Some(0.0)]),
+        false,
+    );
+}
+
+#[test]
+fn test_eq_optional_string_arr() {
+    test_op(
+        Field::OptionalStringArray(vec![Some("a".to_string()), None, Some("b".to_string())]),
+        Op::EQ,
+        Field::OptionalStringArray(vec![Some("a".to_string()), None, Some("b".to_string())]),
+        true,
+    );
+    test_op(
+        Field::OptionalStringArray(vec![Some("a".to_string()), Some("b".to_string()), None]),
+        Op::EQ,
+        Field::OptionalStringArray(vec![
+            Some("a".to_string()),
+            Some("b".to_string()),
+            Some("".to_string()),
+        ]),
+        false,
+    );
+}
+
+#[test]
+fn test_eq_optional_time_arr() {
+    test_op(
+        Field::OptionalDateTimeArray(vec![Some(now_time()), None, Some(yesterday_time())]),
+        Op::EQ,
+        Field::OptionalDateTimeArray(vec![Some(now_time()), None, Some(yesterday_time())]),
+        true,
+    );
+    test_op(
+        Field::OptionalDateTimeArray(vec![Some(now_time()), Some(yesterday_time()), None]),
+        Op::EQ,
+        Field::OptionalDateTimeArray(vec![
+            Some(now_time()),
+            Some(yesterday_time()),
+            Some(Utc.timestamp_opt(0, 0).unwrap()),
+        ]),
+        false,
+    );
+}
+
+#[test]
 fn test_ne() {
     test_op(Field::Int(5), Op::NE, Field::Int(5), false);
     test_op(Field::Int(4), Op::NE, Field::Int(5), true);
