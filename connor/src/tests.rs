@@ -198,6 +198,92 @@ fn test_eq_null() {
 }
 
 #[test]
+fn test_eq_bool_arr() {
+    test_op(
+        Field::BoolArray(vec![true, false, true]),
+        Op::EQ,
+        Field::BoolArray(vec![true, false, true]),
+        true,
+    );
+    test_op(
+        Field::BoolArray(vec![true, false, true]),
+        Op::EQ,
+        Field::BoolArray(vec![false, true, true]),
+        false,
+    );
+}
+
+#[test]
+fn test_eq_int_arr() {
+    test_op(
+        Field::IntArray(vec![2, 3, 4]),
+        Op::EQ,
+        Field::IntArray(vec![2, 3, 4]),
+        true,
+    );
+    test_op(
+        Field::IntArray(vec![2, 4, 3]),
+        Op::EQ,
+        Field::IntArray(vec![2, 3, 4]),
+        false,
+    );
+    test_op(
+        Field::IntArray(vec![2, 3]),
+        Op::EQ,
+        Field::IntArray(vec![2, 3, 4]),
+        false,
+    );
+}
+
+#[test]
+fn test_eq_float_arr() {
+    test_op(
+        Field::FloatArray(vec![2.0, 3.0, 4.0]),
+        Op::EQ,
+        Field::FloatArray(vec![2.0, 3.0, 4.0]),
+        true,
+    );
+    test_op(
+        Field::FloatArray(vec![2.0, 4.0, 3.0]),
+        Op::EQ,
+        Field::FloatArray(vec![2.0, 3.0, 4.0]),
+        false,
+    );
+}
+
+#[test]
+fn test_eq_string_arr() {
+    test_op(
+        Field::StringArray(vec!["a".to_string(), "b".to_string()]),
+        Op::EQ,
+        Field::StringArray(vec!["a".to_string(), "b".to_string()]),
+        true,
+    );
+    test_op(
+        Field::StringArray(vec!["a".to_string(), "b".to_string()]),
+        Op::EQ,
+        Field::StringArray(vec!["b".to_string(), "a".to_string()]),
+        false,
+    );
+}
+
+#[test]
+fn test_eq_time_arr() {
+    test_op(
+        Field::DateTimeArray(vec![now_time(), yesterday_time()]),
+        Op::EQ,
+        Field::DateTimeArray(vec![now_time(), yesterday_time()]),
+        true,
+    );
+    test_op(
+        Field::DateTimeArray(vec![now_time(), yesterday_time()]),
+        Op::EQ,
+        Field::DateTimeArray(vec![yesterday_time(), now_time()]),
+        false,
+    );
+}
+
+#[test]
 fn test_ne() {
     test_op(Field::Int(5), Op::NE, Field::Int(5), false);
     test_op(Field::Int(4), Op::NE, Field::Int(5), true);

@@ -37,6 +37,36 @@ pub fn handle(target_doc_field: &core::doc::Field, doc_field: &core::doc::Field)
             }
             false
         }
+        core::doc::Field::BoolArray(arr_cond) => {
+            if let core::doc::Field::BoolArray(arr_val) = doc_field {
+                return arr_val == arr_cond;
+            }
+            false
+        }
+        core::doc::Field::IntArray(arr_cond) => {
+            if let core::doc::Field::IntArray(arr_val) = doc_field {
+                return arr_val == arr_cond;
+            }
+            false
+        }
+        core::doc::Field::FloatArray(arr_cond) => {
+            if let core::doc::Field::FloatArray(arr_val) = doc_field {
+                return arr_val == arr_cond;
+            }
+            false
+        }
+        core::doc::Field::StringArray(arr_cond) => {
+            if let core::doc::Field::StringArray(arr_val) = doc_field {
+                return arr_val == arr_cond;
+            }
+            false
+        }
+        core::doc::Field::DateTimeArray(arr_cond) => {
+            if let core::doc::Field::DateTimeArray(arr_val) = doc_field {
+                return arr_val == arr_cond;
+            }
+            false
+        }
         _ => return false,
     }
 }
