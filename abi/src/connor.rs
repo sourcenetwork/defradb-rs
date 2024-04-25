@@ -40,9 +40,9 @@ pub fn match_conditions_with(cond_str: &str, doc_str: &str) -> Result<bool, Stri
     }
 }
 
-pub fn deserialize_condition(json_str: &str) -> Result<cond::Condition, serde_json::Error> {
-    let v: Value = serde_json::from_str(json_str)?;
-    let cond = ConditionWrapper::try_from(v).unwrap();
+pub fn deserialize_condition(json_str: &str) -> Result<cond::Condition, String> {
+    let v: Value = serde_json::from_str(json_str).map_err(|e| e.to_string())?;
+    let cond = ConditionWrapper::try_from(v).map_err(|e| e.to_string())?;
     Ok(cond.0)
 }
 
@@ -55,8 +55,6 @@ impl TryFrom<Value> for ConditionWrapper {
     fn try_from(value: Value) -> Result<Self, Self::Error> {
         match value {
             Value::Object(map) => {
-                let len = map.len();
-                print!("len: {}", len);
                 for (key, value) in map.iter() {
                     match key.as_str() {
                         "EQ" | "NE" | "GT" | "GE" | "LT" | "LE" | "IN" | "NIN" | "LIKE"
@@ -122,7 +120,7 @@ impl TryFrom<Value> for ConditionWrapper {
                             )));
                         }
                         _ => {
-                            return Err("Expected a JSON object for Condition".to_string());
+                            return Err(format!("Invalid key in Condition: {}", key));
                         }
                     }
                 }

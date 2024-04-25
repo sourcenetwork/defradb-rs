@@ -298,3 +298,13 @@ fn match_conditions_against_field_match_no_match() {
     assert!(result.is_ok());
     assert!(!result.unwrap());
 }
+
+#[test]
+fn match_conditions_with_null_op() {
+    for op in ["NOT", "AND", "OR"] {
+        let cond_str = format!("{{\"{}\":null}}", op);
+        let result = match_conditions_with(&cond_str, FIELD_1_JSON);
+
+        assert!(result.is_err(), "Expected error for op: {}", op);
+    }
+}
