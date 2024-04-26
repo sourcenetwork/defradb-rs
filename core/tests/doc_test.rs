@@ -1,4 +1,4 @@
-use super::doc;
+use core::doc;
 
 #[test]
 fn test_new_doc() {
