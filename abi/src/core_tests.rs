@@ -1,3 +1,7 @@
+/*
+We tried to move this tests into `tests` folder but the new test files just wouldn't see abi
+crate or nested modules. So we leave it like this for now until we figure out how to make it work.
+*/
 extern crate libc;
 
 use super::core::*;
