@@ -42,6 +42,7 @@ fn deserialize_simple_cond() {
         _ => panic!("Expected CompoundOp"),
     }
 }
+
 const NESTED_PROPS_JSON: &str = r#"
 {
     "AND": [
