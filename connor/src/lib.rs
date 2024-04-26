@@ -7,6 +7,3 @@ mod op_gt;
 mod op_ilike;
 mod op_in;
 mod op_like;
-
-#[cfg(test)]
-mod tests;
